@@ -12,7 +12,7 @@
             --primary: #ff8fa3; 
             --bg: #fff0f3;
             --text: #590d22;
-            --lock-bg: #2b0510; /* Color oscuro para la pantalla de bloqueo */
+            --lock-bg: #2b0510;
         }
         body {
             font-family: 'Courier New', monospace;
@@ -26,8 +26,9 @@
         section { padding: 50px 20px; width: 100%; }
         h1, h2 { margin-bottom: 20px; line-height: 1.2; }
         p { line-height: 1.5; }
+        img { max-width: 100%; height: auto; display: block; }
 
-        /* --- PANTALLA DE BLOQUEO GLOBAL (NUEVO) --- */
+        /* --- PANTALLA DE BLOQUEO GLOBAL --- */
         #global-lock-screen {
             position: fixed;
             top: 0;
@@ -40,41 +41,87 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999; /* Siempre encima de todo */
+            z-index: 9999;
             padding: 20px;
         }
         
         .lock-icon { font-size: 4rem; margin-bottom: 20px; }
         .lock-title { color: white; font-size: 1.5rem; margin-bottom: 10px; }
         .lock-timer { 
-            font-size: 3rem; 
-            font-weight: bold; 
-            color: white; 
-            margin: 20px 0;
-            font-family: monospace;
+            font-size: 3rem; font-weight: bold; color: white; margin: 20px 0; font-family: monospace;
         }
         .lock-note { color: #ffc2d1; font-size: 0.9rem; max-width: 600px; }
 
-        /* --- CONTENIDO PRINCIPAL (Oculto inicialmente) --- */
+        /* --- CONTENIDO PRINCIPAL --- */
         #main-content {
-            display: none; /* Se activa con JS cuando el tiempo llega a 0 */
+            display: none;
             opacity: 0;
             transition: opacity 2s ease-in;
         }
 
-        /* --- ESTILOS DEL RESTO DE LA PÁGINA (Igual que antes) --- */
+        /* --- ESTILOS GENERALES --- */
         .hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .hero h1 { font-size: 3rem; }
         .life-counter { font-size: 1.5rem; font-weight: bold; word-wrap: break-word; }
         
-        .cards-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background-color: white; height: 150px; width: 150px; perspective: 1000px; cursor: pointer; border-radius: 10px; -webkit-tap-highlight-color: transparent; }
+        /* --- TARJETAS (MODIFICADO: MÁS ANCHAS) --- */
+        .cards-container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        .card { 
+            background-color: white; 
+            /* AUMENTADO: Antes 150px, ahora 220px de ancho y 180px de alto */
+            width: 220px; 
+            height: 180px; 
+            perspective: 1000px; 
+            cursor: pointer; 
+            border-radius: 10px; 
+            -webkit-tap-highlight-color: transparent; 
+        }
         .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
         .card:hover .card-inner, .card.flipped .card-inner { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 10px; }
-        .card-front { background-color: var(--primary); color: white; font-size: 2rem; }
-        .card-back { background-color: white; color: var(--text); transform: rotateY(180deg); font-size: 0.85rem; overflow: hidden; }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; } /* Más padding */
+        .card-front { background-color: var(--primary); color: white; font-size: 2.5rem; }
+        .card-back { background-color: white; color: var(--text); transform: rotateY(180deg); font-size: 0.95rem; overflow: hidden; }
 
+        /* --- GALERÍA DE FOTOS (MODIFICADO: MÁS ANCHAS) --- */
+        .gallery-container {
+            display: grid;
+            /* AUMENTADO: Antes minmax(200px), ahora 250px para que las fotos se vean más grandes */
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: 30px auto 0;
+            padding: 0 10px;
+        }
+        
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            grid-row-end: span 2; 
+            position: relative;
+        }
+        .gallery-item:nth-child(even) { grid-row-end: span 1; }
+        .gallery-item:nth-child(3n) { grid-row-end: span 3; }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover { transform: translateY(-5px); }
+        .gallery-item:hover img { transform: scale(1.05); }
+
+        /* --- SECCIONES DE CIERRE --- */
         .locked-wrapper, .surprise-section { border-radius: 20px; margin: 20px auto; max-width: 800px; padding: 60px 20px; }
         .locked-wrapper { background-color: var(--text); color: white; }
         .surprise-section { background-color: var(--text); color: white; display: none; }
@@ -87,14 +134,21 @@
         .hidden-message { font-size: 1.2rem; opacity: 0; animation: fadeIn 3s forwards; animation-delay: 1s; }
         @keyframes fadeIn { to { opacity: 1; } }
 
+        /* --- RESPONSIVE (MÓVIL) --- */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
             .life-counter { font-size: 1.2rem; }
-            .card { width: 140px; height: 140px; }
-            #trip-countdown, .lock-timer { font-size: 1.8rem; } /* Timer más pequeño en móvil */
+            
+            /* Ajuste de tarjetas en móvil para que se vean bien (aprox 2 por fila) */
+            .card { width: 160px; height: 160px; }
+            
+            #trip-countdown, .lock-timer { font-size: 1.8rem; }
             .input-group { flex-direction: column; align-items: center; }
             .password-input, .unlock-btn { width: 100%; margin: 5px 0; }
             .locked-wrapper, .surprise-section { padding: 40px 15px; margin: 10px; }
+            
+            /* Galería en móvil: columnas más pequeñas para que quepan 2 */
+            .gallery-container { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
         }
     </style>
 </head>
@@ -126,6 +180,13 @@
                 </div>
             <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.7;">(Toca las tarjetas para leer)</p>
         </section>
+        
+        <section style="background-color: rgba(255,255,255,0.5);"> 
+            <h2>Tú, a través de mis ojos.</h2>
+            <p>Un pequeño vistazo a la mujer increíble que eres.</p>
+            <div class="gallery-container" id="gallery-container">
+                </div>
+        </section>
 
         <section>
             <div id="locked-section" class="locked-wrapper">
@@ -153,14 +214,14 @@
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE FECHAS ---
+        // --- CONFIGURACIÓN ---
         const hannaBirthday = new Date("2003-11-26T00:00:00"); 
         
-        // FECHA DE DESBLOQUEO GLOBAL (Cumpleaños este año)
-        // Mes 10 es Noviembre (Enero es 0), Día 26, 00:00:00
-        const unlockDate = new Date(2025, 10, 26, 0, 0, 0); 
+        // CUMPLEAÑOS (Fecha de desbloqueo)
+        // Año 2025, Mes 10 (Noviembre), Día 26
+        const unlockDate = new Date(2025, 10, 24, 0, 0, 0); 
 
-        // FECHA DE VUELO
+        // VUELO
         const flightDate = new Date("2025-12-25T03:00:00"); 
         const SECRET_PASSWORD = "HANNA"; 
         
@@ -173,7 +234,17 @@
             "Incluyes a todos los que puedes y te esfuerzas para que todos tengan una bonita experiencia", "Transmites alegría, eres muy divertida, espontánea y estás locamente llena de vida"
         ];
 
-        // --- LÓGICA DE BLOQUEO GLOBAL ---
+        // FOTOS (Asegúrate que los nombres coincidan con los de tu carpeta 'fotos')
+        const photoFilenames = [
+            "foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", 
+            "foto5.jpg", "foto6.jpg", "foto7.jpg", "foto8.jpg",
+            "foto9.jpg", "foto10.jpg", "foto11.jpg", "foto12.jpg",
+            "foto13.jpg", "foto14.jpg", "foto15.jpg", "foto16.jpg",
+            "foto17.jpg", "foto18.jpg", "foto19.jpg", "foto20.jpg",
+            "foto21.jpg", "foto22.jpg", "foto23.jpg" 
+        ];
+
+        // --- LÓGICA BLOQUEO GLOBAL ---
         function checkGlobalLock() {
             const now = new Date();
             const diff = unlockDate - now;
@@ -182,37 +253,22 @@
             const timerDisplay = document.getElementById("global-timer");
 
             if (diff <= 0) {
-                // YA ES EL CUMPLEAÑOS: Desbloquear
                 lockScreen.style.display = "none";
                 mainContent.style.display = "block";
-                
-                // Pequeño efecto fade-in
                 setTimeout(() => { mainContent.style.opacity = 1; }, 50);
-                
-                // Detener este timer específico para ahorrar recursos
                 if (window.globalTimerInterval) clearInterval(window.globalTimerInterval);
                 return; 
             }
-
-            // AÚN NO ES EL CUMPLEAÑOS: Mostrar cuenta regresiva
             const d = Math.floor(diff / (1000 * 60 * 60 * 24));
             const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const m = Math.floor((diff / 1000 / 60) % 60);
             const s = Math.floor((diff / 1000) % 60);
-
-            // Formato bonito: si hay días, muestra días. Si no, solo horas:min:seg
-            if (d > 0) {
-                timerDisplay.innerText = `${d}d ${h}h ${m}m ${s}s`;
-            } else {
-                timerDisplay.innerText = `${h}h ${m}m ${s}s`;
-            }
+            if (d > 0) { timerDisplay.innerText = `${d}d ${h}h ${m}m ${s}s`; } else { timerDisplay.innerText = `${h}h ${m}m ${s}s`; }
         }
-
-        // Iniciar el chequeo del bloqueo inmediatamente y cada segundo
         window.globalTimerInterval = setInterval(checkGlobalLock, 1000);
-        checkGlobalLock(); // Ejecutar una vez al cargar para evitar parpadeo
+        checkGlobalLock();
 
-        // --- LÓGICA CONTADOR VIDA ---
+        // --- CONTADOR VIDA ---
         function updateLifeCounter() {
             const now = new Date();
             const diff = now - hannaBirthday;
@@ -220,53 +276,50 @@
             const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const minutes = Math.floor((diff / 1000 / 60) % 60);
             const seconds = Math.floor((diff / 1000) % 60);
-            document.getElementById("life-counter").innerText = 
-                `${days}d, ${hours}h, ${minutes}m y ${seconds}s`;
+            document.getElementById("life-counter").innerText = `${days}d, ${hours}h, ${minutes}m y ${seconds}s`;
         }
         setInterval(updateLifeCounter, 1000);
 
-        // --- LÓGICA TARJETAS ---
+        // --- TARJETAS ---
         const container = document.getElementById("cards-container");
         reasons.forEach((reason, index) => {
             const card = document.createElement('div');
             card.className = 'card';
-            card.innerHTML = `
-                <div class="card-inner">
-                    <div class="card-front">${index + 1}</div>
-                    <div class="card-back">${reason}</div>
-                </div>
-            `;
-            card.addEventListener('click', function() {
-                this.classList.toggle('flipped');
-            });
+            card.innerHTML = `<div class="card-inner"><div class="card-front">${index + 1}</div><div class="card-back">${reason}</div></div>`;
+            card.addEventListener('click', function() { this.classList.toggle('flipped'); });
             container.appendChild(card);
         });
 
-        // --- LÓGICA CUENTA REGRESIVA VUELO ---
+        // --- GALERÍA FOTOS ---
+        const galleryContainer = document.getElementById("gallery-container");
+        photoFilenames.forEach(filename => {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            // Usa la carpeta 'fotos/'
+            item.innerHTML = `<img src="fotos/${filename}" alt="Foto de Hanna" loading="lazy">`;
+            galleryContainer.appendChild(item);
+        });
+
+        // --- CUENTA REGRESIVA VUELO ---
         function updateTripCountdown() {
             const now = new Date();
             const diff = flightDate - now;
-            if (diff < 0) {
-                document.getElementById("trip-countdown").innerText = "¡Llegó el momento!";
-                return;
-            }
+            if (diff < 0) { document.getElementById("trip-countdown").innerText = "¡Llegó el momento!"; return; }
             const d = Math.floor(diff / (1000 * 60 * 60 * 24));
             const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const m = Math.floor((diff / 1000 / 60) % 60);
             const s = Math.floor((diff / 1000) % 60);
-            document.getElementById("trip-countdown").innerText = 
-                `${d}d ${h}h ${m}m ${s}s`;
+            document.getElementById("trip-countdown").innerText = `${d}d ${h}h ${m}m ${s}s`;
         }
         setInterval(updateTripCountdown, 1000);
 
-        // --- LÓGICA PASSWORD ---
+        // --- PASSWORD ---
         function checkPassword() {
             const input = document.getElementById("pass-input");
             const val = input.value.toUpperCase().trim();
             const errorMsg = document.getElementById("error-message");
             const lockedSection = document.getElementById("locked-section");
             const surpriseSection = document.getElementById("surprise-section");
-
             if (val === SECRET_PASSWORD) {
                 errorMsg.style.display = "none";
                 lockedSection.style.display = "none";
@@ -278,10 +331,7 @@
                 setTimeout(() => { input.style.border = "2px solid var(--primary)"; }, 500);
             }
         }
-
-        document.getElementById("pass-input").addEventListener("keypress", function(e) {
-            if (e.key === "Enter") checkPassword();
-        });
+        document.getElementById("pass-input").addEventListener("keypress", function(e) { if (e.key === "Enter") checkPassword(); });
     </script>
 </body>
 </html>
