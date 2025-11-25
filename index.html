@@ -44,82 +44,88 @@
             z-index: 9999;
             padding: 20px;
         }
-        
         .lock-icon { font-size: 4rem; margin-bottom: 20px; }
         .lock-title { color: white; font-size: 1.5rem; margin-bottom: 10px; }
-        .lock-timer { 
-            font-size: 3rem; font-weight: bold; color: white; margin: 20px 0; font-family: monospace;
-        }
+        .lock-timer { font-size: 3rem; font-weight: bold; color: white; margin: 20px 0; font-family: monospace; }
         .lock-note { color: #ffc2d1; font-size: 0.9rem; max-width: 600px; }
 
         /* --- CONTENIDO PRINCIPAL --- */
-        #main-content {
-            display: none;
-            opacity: 0;
-            transition: opacity 2s ease-in;
-        }
+        #main-content { display: none; opacity: 0; transition: opacity 2s ease-in; }
 
         /* --- ESTILOS GENERALES --- */
         .hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .hero h1 { font-size: 3rem; }
         .life-counter { font-size: 1.5rem; font-weight: bold; word-wrap: break-word; }
         
-        /* --- TARJETAS (MODIFICADO: MÁS ANCHAS) --- */
-        .cards-container { 
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center; 
-            gap: 20px; 
-            max-width: 1200px; 
-            margin: 0 auto; 
-        }
-        .card { 
-            background-color: white; 
-            /* AUMENTADO: Antes 150px, ahora 220px de ancho y 180px de alto */
-            width: 220px; 
-            height: 180px; 
-            perspective: 1000px; 
-            cursor: pointer; 
-            border-radius: 10px; 
-            -webkit-tap-highlight-color: transparent; 
-        }
+        /* --- TARJETAS --- */
+        .cards-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .card { background-color: white; width: 220px; height: 180px; perspective: 1000px; cursor: pointer; border-radius: 10px; -webkit-tap-highlight-color: transparent; }
         .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
         .card:hover .card-inner, .card.flipped .card-inner { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; } /* Más padding */
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; }
         .card-front { background-color: var(--primary); color: white; font-size: 2.5rem; }
         .card-back { background-color: white; color: var(--text); transform: rotateY(180deg); font-size: 0.95rem; overflow: hidden; }
 
-        /* --- GALERÍA DE FOTOS (MODIFICADO: MÁS ANCHAS) --- */
-        .gallery-container {
-            display: grid;
-            /* AUMENTADO: Antes minmax(200px), ahora 250px para que las fotos se vean más grandes */
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            max-width: 1200px;
-            margin: 30px auto 0;
-            padding: 0 10px;
+        /* --- GALERÍA DE FOTOS (MODIFICADO: AHORA SON UNIFORMES) --- */
+        .gallery-container { 
+            display: grid; 
+            /* Esto crea columnas automáticas */
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+            gap: 15px; 
+            max-width: 1200px; 
+            margin: 30px auto 0; 
+            padding: 0 10px; 
         }
         
-        .gallery-item {
-            overflow: hidden;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-            grid-row-end: span 2; 
+        .gallery-item { 
+            overflow: hidden; 
+            border-radius: 15px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            transition: transform 0.3s ease; 
+            cursor: zoom-in;
+            
+            /* --- CAMBIO CLAVE AQUÍ --- */
+            /* Forzamos que todas las cajas midan lo mismo de alto */
+            height: 420px; 
+            width: 100%;
             position: relative;
         }
-        .gallery-item:nth-child(even) { grid-row-end: span 1; }
-        .gallery-item:nth-child(3n) { grid-row-end: span 3; }
 
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
+        .gallery-item img { 
+            width: 100%; 
+            height: 100%; 
+            /* Esto es mágico: recorta la imagen para llenar el cuadro sin deformarla */
+            object-fit: cover; 
+            transition: transform 0.5s ease; 
         }
 
         .gallery-item:hover { transform: translateY(-5px); }
         .gallery-item:hover img { transform: scale(1.05); }
+
+        /* --- LIGHTBOX --- */
+        #lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #lightbox.active { opacity: 1; pointer-events: all; }
+        #lightbox img { max-width: 90%; max-height: 90%; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: scale(0.9); transition: transform 0.3s ease; }
+        #lightbox.active img { transform: scale(1); }
+        #lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 3rem; cursor: pointer; }
+
+        /* --- VIDEO SECTION --- */
+        .video-container { max-width: 800px; margin: 0 auto; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); background-color: black; }
+        video { width: 100%; height: auto; display: block; }
 
         /* --- SECCIONES DE CIERRE --- */
         .locked-wrapper, .surprise-section { border-radius: 20px; margin: 20px auto; max-width: 800px; padding: 60px 20px; }
@@ -138,17 +144,17 @@
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
             .life-counter { font-size: 1.2rem; }
-            
-            /* Ajuste de tarjetas en móvil para que se vean bien (aprox 2 por fila) */
             .card { width: 160px; height: 160px; }
-            
             #trip-countdown, .lock-timer { font-size: 1.8rem; }
             .input-group { flex-direction: column; align-items: center; }
             .password-input, .unlock-btn { width: 100%; margin: 5px 0; }
             .locked-wrapper, .surprise-section { padding: 40px 15px; margin: 10px; }
             
-            /* Galería en móvil: columnas más pequeñas para que quepan 2 */
+            /* En móvil, hacemos las fotos un poco más cuadradas y pequeñas */
             .gallery-container { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+            .gallery-item { height: 420px; } /* Altura fija menor en celular */
+            
+            #lightbox-close { top: 10px; right: 20px; font-size: 2.5rem; }
         }
     </style>
 </head>
@@ -160,6 +166,11 @@
         <p>Este regalo se desbloquea automáticamente en:</p>
         <div id="global-timer" class="lock-timer">Cargando...</div>
         <p class="lock-note">Vuelve cuando el reloj marque cero. Te amo.</p>
+    </div>
+
+    <div id="lightbox">
+        <span id="lightbox-close">&times;</span>
+        <img id="lightbox-img" src="" alt="Foto ampliada">
     </div>
 
     <div id="main-content">
@@ -183,9 +194,20 @@
         
         <section style="background-color: rgba(255,255,255,0.5);"> 
             <h2>Tú, a través de mis ojos.</h2>
-            <p>Un pequeño vistazo a la mujer increíble que eres.</p>
+            <p>Un pequeño vistazo a la mujer increíble que eres. (Toca para ampliar)</p>
             <div class="gallery-container" id="gallery-container">
                 </div>
+        </section>
+
+        <section>
+            <h2>Un Mensaje Especial 📹</h2>
+            <p>Dale play para ver algo que preparé para ti.</p>
+            <div class="video-container">
+                <video controls>
+                    <source src="fotos/video-hanna.mp4" type="video/mp4">
+                    Tu navegador no soporta la etiqueta de video.
+                </video>
+            </div>
         </section>
 
         <section>
@@ -216,12 +238,7 @@
     <script>
         // --- CONFIGURACIÓN ---
         const hannaBirthday = new Date("2003-11-26T00:00:00"); 
-        
-        // CUMPLEAÑOS (Fecha de desbloqueo)
-        // Año 2025, Mes 10 (Noviembre), Día 26
         const unlockDate = new Date(2025, 10, 24, 0, 0, 0); 
-
-        // VUELO
         const flightDate = new Date("2025-12-25T03:00:00"); 
         const SECRET_PASSWORD = "HANNA"; 
         
@@ -234,14 +251,13 @@
             "Incluyes a todos los que puedes y te esfuerzas para que todos tengan una bonita experiencia", "Transmites alegría, eres muy divertida, espontánea y estás locamente llena de vida"
         ];
 
-        // FOTOS (Asegúrate que los nombres coincidan con los de tu carpeta 'fotos')
         const photoFilenames = [
             "foto1.jpg", "foto2.jpg", "foto3.jpg", "foto4.jpg", 
             "foto5.jpg", "foto6.jpg", "foto7.jpg", "foto8.jpg",
             "foto9.jpg", "foto10.jpg", "foto11.jpg", "foto12.jpg",
             "foto13.jpg", "foto14.jpg", "foto15.jpg", "foto16.jpg",
             "foto17.jpg", "foto18.jpg", "foto19.jpg", "foto20.jpg",
-            "foto21.jpg", "foto22.jpg", "foto23.jpg" 
+            "foto21.jpg", "foto22.jpg", "foto23.jpg", "foto24.jpg"
         ];
 
         // --- LÓGICA BLOQUEO GLOBAL ---
@@ -292,12 +308,27 @@
 
         // --- GALERÍA FOTOS ---
         const galleryContainer = document.getElementById("gallery-container");
+        const lightbox = document.getElementById("lightbox");
+        const lightboxImg = document.getElementById("lightbox-img");
+        const lightboxClose = document.getElementById("lightbox-close");
+
         photoFilenames.forEach(filename => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
-            // Usa la carpeta 'fotos/'
-            item.innerHTML = `<img src="fotos/${filename}" alt="Foto de Hanna" loading="lazy">`;
+            const img = document.createElement('img');
+            img.src = `fotos/${filename}`;
+            img.alt = "Foto de Hanna";
+            img.loading = "lazy";
+            item.addEventListener('click', function() {
+                lightboxImg.src = this.querySelector('img').src;
+                lightbox.classList.add('active');
+            });
+            item.appendChild(img);
             galleryContainer.appendChild(item);
+        });
+
+        lightbox.addEventListener('click', function(e) {
+            if (e.target !== lightboxImg) { lightbox.classList.remove('active'); }
         });
 
         // --- CUENTA REGRESIVA VUELO ---
