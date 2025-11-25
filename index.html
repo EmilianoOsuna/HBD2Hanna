@@ -6,13 +6,12 @@
     <title>Hanna 22 🎉</title>
     <style>
         /* --- RESET Y BASE --- */
-        * {
-            box-sizing: border-box; /* Vital para responsive */
-        }
+        * { box-sizing: border-box; }
         :root {
             --primary: #ff8fa3; 
             --bg: #fff0f3;
             --text: #590d22;
+            --lock-bg: #2b0510; /* Color oscuro para la pantalla de bloqueo */
         }
         body {
             font-family: 'Courier New', monospace;
@@ -21,243 +20,196 @@
             text-align: center;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; /* Evita scroll horizontal indeseado */
+            overflow-x: hidden;
         }
-        section { 
-            padding: 50px 20px; 
-            width: 100%;
-        }
+        section { padding: 50px 20px; width: 100%; }
         h1, h2 { margin-bottom: 20px; line-height: 1.2; }
         p { line-height: 1.5; }
 
-        /* --- SECCIÓN 1: HERO --- */
-        .hero {
-            min-height: 80vh; /* Usar min-height es mejor para móviles */
+        /* --- PANTALLA DE BLOQUEO GLOBAL (NUEVO) --- */
+        #global-lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--lock-bg);
+            color: var(--primary);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            z-index: 9999; /* Siempre encima de todo */
             padding: 20px;
         }
-        .hero h1 { font-size: 3rem; }
         
-        /* --- SECCIÓN 2: CONTADOR DE VIDA --- */
-        .life-counter { 
-            font-size: 1.5rem; 
+        .lock-icon { font-size: 4rem; margin-bottom: 20px; }
+        .lock-title { color: white; font-size: 1.5rem; margin-bottom: 10px; }
+        .lock-timer { 
+            font-size: 3rem; 
             font-weight: bold; 
-            word-wrap: break-word; /* Evita que se salga en pantallas muy pequeñas */
+            color: white; 
+            margin: 20px 0;
+            font-family: monospace;
+        }
+        .lock-note { color: #ffc2d1; font-size: 0.9rem; max-width: 600px; }
+
+        /* --- CONTENIDO PRINCIPAL (Oculto inicialmente) --- */
+        #main-content {
+            display: none; /* Se activa con JS cuando el tiempo llega a 0 */
+            opacity: 0;
+            transition: opacity 2s ease-in;
         }
 
-        /* --- SECCIÓN 3: TARJETAS --- */
-        .cards-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .card {
-            background-color: white;
-            height: 150px;
-            width: 150px; /* Base width */
-            perspective: 1000px;
-            cursor: pointer;
-            border-radius: 10px;
-            /* Pequeño truco: evita parpadeos en móviles al rotar */
-            -webkit-tap-highlight-color: transparent; 
-        }
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-        }
-        .card:hover .card-inner, .card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden; /* Safari fix */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            padding: 10px;
-        }
+        /* --- ESTILOS DEL RESTO DE LA PÁGINA (Igual que antes) --- */
+        .hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .hero h1 { font-size: 3rem; }
+        .life-counter { font-size: 1.5rem; font-weight: bold; word-wrap: break-word; }
+        
+        .cards-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .card { background-color: white; height: 150px; width: 150px; perspective: 1000px; cursor: pointer; border-radius: 10px; -webkit-tap-highlight-color: transparent; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .card:hover .card-inner, .card.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 10px; }
         .card-front { background-color: var(--primary); color: white; font-size: 2rem; }
         .card-back { background-color: white; color: var(--text); transform: rotateY(180deg); font-size: 0.85rem; overflow: hidden; }
 
-        /* --- SECCIONES ESPECIALES (CANDADO Y SORPRESA) --- */
-        .locked-wrapper, .surprise-section {
-            border-radius: 20px;
-            margin: 20px auto;
-            max-width: 800px; /* Para que no se estire infinito en PC */
-            padding: 60px 20px;
-        }
-
-        .locked-wrapper {
-            background-color: var(--text);
-            color: white;
-        }
-
-        .surprise-section {
-            background-color: var(--text);
-            color: white;
-            display: none; /* Oculto por defecto */
-        }
-
-        #trip-countdown {
-            font-size: 2.5rem;
-            margin: 30px 0;
-            font-weight: bold;
-            word-break: break-word;
-        }
-
-        .input-group {
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap; /* Permite que bajen en móvil */
-        }
-
-        .password-input {
-            padding: 15px;
-            font-size: 1.2rem;
-            border-radius: 10px;
-            border: 2px solid var(--primary);
-            outline: none;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            min-width: 200px;
-        }
-
-        .unlock-btn {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            transition: background 0.3s;
-        }
+        .locked-wrapper, .surprise-section { border-radius: 20px; margin: 20px auto; max-width: 800px; padding: 60px 20px; }
+        .locked-wrapper { background-color: var(--text); color: white; }
+        .surprise-section { background-color: var(--text); color: white; display: none; }
+        #trip-countdown { font-size: 2.5rem; margin: 30px 0; font-weight: bold; word-break: break-word; }
+        .input-group { margin-top: 30px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .password-input { padding: 15px; font-size: 1.2rem; border-radius: 10px; border: 2px solid var(--primary); outline: none; text-align: center; font-family: 'Courier New', monospace; min-width: 200px; }
+        .unlock-btn { padding: 15px 30px; font-size: 1.2rem; background-color: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: 'Courier New', monospace; transition: background 0.3s; }
         .unlock-btn:hover { background-color: #ff5c77; }
-
-        .error-msg {
-            color: #ff8fa3;
-            margin-top: 15px;
-            font-weight: bold;
-            display: none;
-        }
-
-        .hidden-message {
-            font-size: 1.2rem;
-            opacity: 0;
-            animation: fadeIn 3s forwards;
-            animation-delay: 1s;
-        }
+        .error-msg { color: #ff8fa3; margin-top: 15px; font-weight: bold; display: none; }
+        .hidden-message { font-size: 1.2rem; opacity: 0; animation: fadeIn 3s forwards; animation-delay: 1s; }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* --- MEDIA QUERIES (AQUÍ OCURRE LA MAGIA RESPONSIVE) --- */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2rem; } /* Título más pequeño */
-            
-            .life-counter { font-size: 1.2rem; } /* Contador adaptable */
-            
-            .card {
-                /* En móviles, las tarjetas pueden ser un poco más flexibles */
-                width: 140px;
-                height: 140px;
-            }
-            
-            #trip-countdown { font-size: 1.8rem; } /* Ajuste cuenta regresiva */
-            
-            .input-group {
-                flex-direction: column; /* Poner input arriba del botón */
-                align-items: center;
-            }
-            
-            .password-input, .unlock-btn {
-                width: 100%; /* Ancho completo para dedos gordos */
-                margin: 5px 0;
-            }
-            
-            .locked-wrapper, .surprise-section {
-                padding: 40px 15px; /* Menos padding para ganar espacio */
-                margin: 10px;
-            }
+            .hero h1 { font-size: 2rem; }
+            .life-counter { font-size: 1.2rem; }
+            .card { width: 140px; height: 140px; }
+            #trip-countdown, .lock-timer { font-size: 1.8rem; } /* Timer más pequeño en móvil */
+            .input-group { flex-direction: column; align-items: center; }
+            .password-input, .unlock-btn { width: 100%; margin: 5px 0; }
+            .locked-wrapper, .surprise-section { padding: 40px 15px; margin: 10px; }
         }
     </style>
 </head>
 <body>
 
-    <section class="hero">
-        <br><br><br><br><br><br><br><br>
-        <h1>¡Felices 22, Hanna! 🎂</h1>
-        <p>Una pequeña página para la persona más grande de mi mundo.</p>
-    </section>
+    <div id="global-lock-screen">
+        <div class="lock-icon">🎂🚫</div>
+        <h2 class="lock-title">¡No comas ansias!</h2>
+        <p>Este regalo se desbloquea automáticamente en:</p>
+        <div id="global-timer" class="lock-timer">Cargando...</div>
+        <p class="lock-note">Vuelve cuando el reloj marque cero. Te amo.</p>
+    </div>
 
-    <section>
-        <br><br><br><br><br><br><br><br>
-        <div style="font-size: 3rem; margin-bottom: 10px;">🎉🎈🎊</div>
-        <h2>Haciendo el mundo más bonito por:</h2>
-        <div id="life-counter" class="life-counter">Cargando...</div>
-    </section>
+    <div id="main-content">
+        <section class="hero">
+            <h1>¡Felices 22, Hanna! 🎂</h1>
+            <p>Una pequeña página para la persona más grande de mi mundo.</p>
+        </section>
 
-    <section>
-        <h2>22 Razones por las que haces al mundo más bonito</h2>
-        <div class="cards-container" id="cards-container">
+        <section>
+            <div style="font-size: 3rem; margin-bottom: 10px;">🎉🎈🎊</div>
+            <h2>Haciendo el mundo más bonito por:</h2>
+            <div id="life-counter" class="life-counter">Cargando...</div>
+        </section>
+
+        <section>
+            <h2>22 Razones por las que te amo</h2>
+            <div class="cards-container" id="cards-container">
+                </div>
+            <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.7;">(Toca las tarjetas para leer)</p>
+        </section>
+
+        <section>
+            <div id="locked-section" class="locked-wrapper">
+                <h2>🔒 Archivo Confidencial</h2>
+                <p>Para ver el siguiente paso, introduce la contraseña que encontraste en las pistas.</p>
+                
+                <div class="input-group">
+                    <input type="text" id="pass-input" class="password-input" placeholder="CONTRASEÑA" autocomplete="off">
+                    <button onclick="checkPassword()" class="unlock-btn">Desbloquear</button>
+                </div>
+                <p id="error-message" class="error-msg">⚠️ Acceso denegado. Intenta de nuevo.</p>
             </div>
-        <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.7;">(Toca las tarjetas para leer)</p>
-    </section>
 
-    <section>
-        <div id="locked-section" class="locked-wrapper">
-            <h2>🔒 Archivo Confidencial</h2>
-            <p>Para ver el siguiente paso, introduce la contraseña que encontraste en las pistas.</p>
-            
-            <div class="input-group">
-                <input type="text" id="pass-input" class="password-input" placeholder="CONTRASEÑA" autocomplete="off">
-                <button onclick="checkPassword()" class="unlock-btn">Desbloquear</button>
+            <div id="surprise-section" class="surprise-section">
+                <h2>✨ ¡ACCESO CONCEDIDO! ✨</h2>
+                <h3>Tiempo restante para nuestro próximo abrazo:</h3>
+                <div id="trip-countdown">Calculando...</div>
+                <div class="hidden-message">
+                    <p style="font-size: 1.5rem;">Sorpresa, mi amor... ❤️</p>
+                    <p style="font-size: 2rem; margin: 20px 0;"><strong>¡YA TENGO EL BOLETO! ✈️🇧🇴</strong></p>
+                    <p>Ve preparando las maletas. Nos vemos en diciembre.</p>
+                </div>
             </div>
-            <p id="error-message" class="error-msg">⚠️ Acceso denegado. Intenta de nuevo.</p>
-        </div>
-
-        <div id="surprise-section" class="surprise-section">
-            <h2>✨¡ACCESO CONCEDIDO!✨</h2>
-            <h3>Tiempo restante para nuestro próximo abrazo:</h3>
-            <div id="trip-countdown">Calculando...</div>
-            <div class="hidden-message">
-                <p style="font-size: 1.5rem;">Sorpresa, mi amor... ❤️</p>
-                <p style="font-size: 2rem; margin: 20px 0;"><strong>¡YA TENGO EL BOLETO! <br>✈️🇧🇴</strong></p>
-                <p>Prepárate. Nos vemos en diciembre.</p>
-            </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <script>
-        // --- CONFIGURACIÓN ---
+        // --- CONFIGURACIÓN DE FECHAS ---
         const hannaBirthday = new Date("2003-11-26T00:00:00"); 
+        
+        // FECHA DE DESBLOQUEO GLOBAL (Cumpleaños este año)
+        // Mes 10 es Noviembre (Enero es 0), Día 26, 00:00:00
+        const unlockDate = new Date(2025, 10, 26, 0, 0, 0); 
+
+        // FECHA DE VUELO
         const flightDate = new Date("2025-12-25T03:00:00"); 
         const SECRET_PASSWORD = "HANNA"; 
         
         const reasons = [
-            "Tu sonrisa", "Tu fe inquebrantable", "Cómo me miras", "Tu paciencia",
-            "Tus ojos", "Tu inteligencia", "Tu risa", "Nuestras charlas",
-            "Tu apoyo", "Tu valentía", "Tu bondad", "Tu estilo",
-            "Cómo amas a Dios", "Tu voz", "Tus consejos", "Tu fuerza",
-            "Tu ternura", "Tus sueños", "Nuestro futuro", "Tus abrazos (pronto)",
-            "Porque eres tú", "Por todo lo que viene"
+            "AMAS. Amas a todos como Dios nos ama", "Eres amable, paciente y empática", "Eres optimista, siempre te esfuerzas por ver el vaso medio lleno", "A pesar de que la vida no siempre es fácil, tú nunca te desquitas con los demás",
+            "Siempre quieres dar más de ti y siempre quieres mejorar", "Te conoces mucho y eres fiel a ti", "Tienes maravillosos valores y principios, pero no solo eso, vives conforme a ellos", "Eres super inteligente, curiosa e interesante. Sabes muchas cosas y siempre quieres aprender más",
+            "La gente te importa. No eres indiferente ante los problemas y necesidades de los demás", "Haces muchas cosas, incluso con miedo o sin sentirte lista, lo haces. Eres valiente", "Tienes un corazón noble e inocente, que no tiende a ver lo malo del mundo ni de las personas", "Tus outfits son una extensión de ti misma y le permites al mundo ver todo eso",
+            "Amas a Dios y te esfuerzas por tener una mejor relación con él", "Siempre que puedes usas tus dones para servir a los demás y muchas veces tú buscas las oportunidades de hacerlo", "Tienes mucha sabiduría y eso se refleja en los consejos que das y cómo ayudas a los demás", "No te rindes, eres perseverante, paciente y resiliente",
+            "Tienes ojos para ver la belleza en las cosas pequeñas, valoras lo sencillo y no dejas que pase desapercibido", "Eres ambiciosa en el buen sentido de la palabra, sabes lo que quieres y no eres conformista", "Eres responsable, la gente puede confiar en ti y estar tranquilos de que no les vas a fallar", "Eres una amiga maravillosa, celebras con los que celebran y lloras con los que lloran. Los acompañas en serio",
+            "Incluyes a todos los que puedes y te esfuerzas para que todos tengan una bonita experiencia", "Transmites alegría, eres muy divertida, espontánea y estás locamente llena de vida"
         ];
+
+        // --- LÓGICA DE BLOQUEO GLOBAL ---
+        function checkGlobalLock() {
+            const now = new Date();
+            const diff = unlockDate - now;
+            const lockScreen = document.getElementById("global-lock-screen");
+            const mainContent = document.getElementById("main-content");
+            const timerDisplay = document.getElementById("global-timer");
+
+            if (diff <= 0) {
+                // YA ES EL CUMPLEAÑOS: Desbloquear
+                lockScreen.style.display = "none";
+                mainContent.style.display = "block";
+                
+                // Pequeño efecto fade-in
+                setTimeout(() => { mainContent.style.opacity = 1; }, 50);
+                
+                // Detener este timer específico para ahorrar recursos
+                if (window.globalTimerInterval) clearInterval(window.globalTimerInterval);
+                return; 
+            }
+
+            // AÚN NO ES EL CUMPLEAÑOS: Mostrar cuenta regresiva
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+
+            // Formato bonito: si hay días, muestra días. Si no, solo horas:min:seg
+            if (d > 0) {
+                timerDisplay.innerText = `${d}d ${h}h ${m}m ${s}s`;
+            } else {
+                timerDisplay.innerText = `${h}h ${m}m ${s}s`;
+            }
+        }
+
+        // Iniciar el chequeo del bloqueo inmediatamente y cada segundo
+        window.globalTimerInterval = setInterval(checkGlobalLock, 1000);
+        checkGlobalLock(); // Ejecutar una vez al cargar para evitar parpadeo
 
         // --- LÓGICA CONTADOR VIDA ---
         function updateLifeCounter() {
@@ -272,7 +224,7 @@
         }
         setInterval(updateLifeCounter, 1000);
 
-        // --- LÓGICA TARJETAS (Añadí soporte touch mejorado) ---
+        // --- LÓGICA TARJETAS ---
         const container = document.getElementById("cards-container");
         reasons.forEach((reason, index) => {
             const card = document.createElement('div');
@@ -283,14 +235,13 @@
                     <div class="card-back">${reason}</div>
                 </div>
             `;
-            // Añadir clase 'flipped' al hacer click (mejor para móviles que solo :hover)
             card.addEventListener('click', function() {
                 this.classList.toggle('flipped');
             });
             container.appendChild(card);
         });
 
-        // --- LÓGICA CUENTA REGRESIVA ---
+        // --- LÓGICA CUENTA REGRESIVA VUELO ---
         function updateTripCountdown() {
             const now = new Date();
             const diff = flightDate - now;
