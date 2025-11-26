@@ -43,66 +43,65 @@
             align-items: center;
             z-index: 9999;
             padding: 20px;
+            
+            /* OPTIMIZACIÓN: Transición suave */
+            transition: opacity 1s ease-in-out, visibility 1s;
+            opacity: 1;
+            visibility: visible;
         }
+        
+        /* Clase para desvanecer el bloqueo */
+        .fade-out {
+            opacity: 0 !important;
+            visibility: hidden;
+        }
+
         .lock-icon { font-size: 4rem; margin-bottom: 20px; }
         .lock-title { color: white; font-size: 1.5rem; margin-bottom: 10px; }
         .lock-timer { font-size: 3rem; font-weight: bold; color: white; margin: 20px 0; font-family: monospace; }
         .lock-note { color: #ffc2d1; font-size: 0.9rem; max-width: 600px; }
 
         /* --- CONTENIDO PRINCIPAL --- */
-        #main-content { display: none; opacity: 0; transition: opacity 2s ease-in; }
+        #main-content { 
+            display: none; 
+            opacity: 0; 
+            /* OPTIMIZACIÓN: Entrada suave */
+            transition: opacity 2s ease-out;
+            will-change: opacity;
+        }
+
+        /* Clase para mostrar el contenido */
+        .fade-in {
+            opacity: 1 !important;
+        }
 
         /* --- ESTILOS GENERALES --- */
         .hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .hero h1 { font-size: 3rem; }
-        .life-counter { font-size: 1.5rem; font-weight: bold; word-wrap: break-word; }
-
-        /* --- NUEVO ESTILO DEL CONTADOR (Dashboard) --- */
+        
+        /* --- CONTADOR DASHBOARD (Estilo Cajas) --- */
         .counter-wrapper {
             display: flex;
             justify-content: center;
             gap: 15px;
-            flex-wrap: wrap; /* Para que se adapte a móviles */
+            flex-wrap: wrap;
             margin-top: 20px;
         }
-
         .time-box {
             background-color: white;
             padding: 15px;
             border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(255, 143, 163, 0.3); /* Sombra suave rosa */
-            min-width: 80px; /* Tamaño mínimo para que se vean uniformes */
+            box-shadow: 0 4px 10px rgba(255, 143, 163, 0.3);
+            min-width: 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
             transition: transform 0.3s ease;
         }
+        .time-box:hover { transform: translateY(-5px); }
+        .time-val { font-size: 2.5rem; font-weight: bold; color: var(--primary); line-height: 1; }
+        .time-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; color: #888; }
 
-        .time-box:hover {
-            transform: translateY(-5px); /* Efecto flotante al pasar el mouse */
-        }
-
-        .time-val {
-            font-size: 2.5rem; /* ¡Números grandes! */
-            font-weight: bold;
-            color: var(--primary);
-            line-height: 1;
-        }
-
-        .time-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
-            color: #888;
-        }
-
-        /* Ajuste para móviles: que se vean un poco más pequeños si es necesario */
-        @media (max-width: 768px) {
-            .time-val { font-size: 2rem; }
-            .time-box { min-width: 70px; padding: 10px; }
-        }
-        
         /* --- TARJETAS --- */
         .cards-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; margin: 0 auto; }
         .card { background-color: white; width: 220px; height: 180px; perspective: 1000px; cursor: pointer; border-radius: 10px; -webkit-tap-highlight-color: transparent; }
@@ -112,39 +111,20 @@
         .card-front { background-color: var(--primary); color: white; font-size: 2.5rem; }
         .card-back { background-color: white; color: var(--text); transform: rotateY(180deg); font-size: 0.95rem; overflow: hidden; }
 
-        /* --- GALERÍA DE FOTOS (MODIFICADO: AHORA SON UNIFORMES) --- */
-        .gallery-container { 
-            display: grid; 
-            /* Esto crea columnas automáticas */
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
-            gap: 15px; 
-            max-width: 1200px; 
-            margin: 30px auto 0; 
-            padding: 0 10px; 
-        }
-        
+        /* --- GALERÍA DE FOTOS --- */
+        .gallery-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; max-width: 1200px; margin: 30px auto 0; padding: 0 10px; }
         .gallery-item { 
             overflow: hidden; 
             border-radius: 15px; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
             transition: transform 0.3s ease; 
             cursor: zoom-in;
-            
-            /* --- CAMBIO CLAVE AQUÍ --- */
-            /* Forzamos que todas las cajas midan lo mismo de alto */
-            height: 420px; 
+            height: 420px; /* Altura fija para uniformidad */
             width: 100%;
             position: relative;
+            background-color: #eee; /* Color de fondo mientras carga */
         }
-
-        .gallery-item img { 
-            width: 100%; 
-            height: 100%; 
-            /* Esto es mágico: recorta la imagen para llenar el cuadro sin deformarla */
-            object-fit: cover; 
-            transition: transform 0.5s ease; 
-        }
-
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .gallery-item:hover { transform: translateY(-5px); }
         .gallery-item:hover img { transform: scale(1.05); }
 
@@ -155,7 +135,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(0, 0, 0, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -165,9 +145,9 @@
             transition: opacity 0.3s ease;
         }
         #lightbox.active { opacity: 1; pointer-events: all; }
-        #lightbox img { max-width: 90%; max-height: 90%; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: scale(0.9); transition: transform 0.3s ease; }
+        #lightbox img { max-width: 95%; max-height: 95%; border-radius: 5px; box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: scale(0.9); transition: transform 0.3s ease; }
         #lightbox.active img { transform: scale(1); }
-        #lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 3rem; cursor: pointer; }
+        #lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 3rem; cursor: pointer; padding: 10px; }
 
         /* --- VIDEO SECTION --- */
         .video-container { max-width: 800px; margin: 0 auto; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); background-color: black; }
@@ -189,17 +169,15 @@
         /* --- RESPONSIVE (MÓVIL) --- */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2rem; }
-            .life-counter { font-size: 1.2rem; }
+            .time-val { font-size: 2rem; }
+            .time-box { min-width: 70px; padding: 10px; }
             .card { width: 160px; height: 160px; }
             #trip-countdown, .lock-timer { font-size: 1.8rem; }
             .input-group { flex-direction: column; align-items: center; }
             .password-input, .unlock-btn { width: 100%; margin: 5px 0; }
             .locked-wrapper, .surprise-section { padding: 40px 15px; margin: 10px; }
-            
-            /* En móvil, hacemos las fotos un poco más cuadradas y pequeñas */
             .gallery-container { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-            .gallery-item { height: 420px; } /* Altura fija menor en celular */
-            
+            .gallery-item { height: 300px; } /* Altura fija menor en móvil */
             #lightbox-close { top: 10px; right: 20px; font-size: 2.5rem; }
         }
     </style>
@@ -219,31 +197,29 @@
         <img id="lightbox-img" src="" alt="Foto ampliada">
     </div>
 
-    
     <div id="main-content">
         <section class="hero">
-            <br><br><br><br><br><br><br><br><br><br>
+            <br><br><br><br><br><br><br><br>
             <h1>¡Felices 22, mi amor! 🎂</h1>
             <p>Una pequeña página para la persona más especial del mundo.</p>
         </section>
 
-        <br><br><br><br><br><br><br>
+        <br><br><br><br><br><br><br><br>
         <section>
             <div style="font-size: 3rem; margin-bottom: 10px;">🎉🎈🎊</div>
             <h2>Llevas haciendo el mundo más bonito por:</h2>
-            <div id="life-counter" class="life-counter">Cargando...</div>
+            <div id="life-counter">Cargando...</div>
         </section>
 
         <section>
-            <h2>22 Razones por las que haces al mundo más bonito (Existen infinitas razones, pero tengo que limitarme)</h2>
-            <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.7;">(Toca las tarjetas para leer)</p>
+            <h2><b>22 Razones por las que haces al mundo más bonito </b><br></h2> <p>(Existen infinitas razones, pero tengo que limitarme)</p> 
             <div class="cards-container" id="cards-container">
                 </div>
         </section>
         
         <section style="background-color: rgba(255,255,255,0.5);"> 
             <h2>Tú, a través de mis ojos.</h2>
-            <p>Verte es de los más grandes placeres de mi vida. (Toca para ampliar)</p>
+            <p>Verte es de los más grandes placeres de mi vida. (Puedes tocar para ampliar)</p>
             <div class="gallery-container" id="gallery-container">
                 </div>
         </section>
@@ -251,7 +227,7 @@
         <section>
             <h2>Tengo algo que decirte, mi niña hermosa</h2>
             <div class="video-container">
-                <video controls>
+                <video controls preload="metadata">
                     <source src="fotos/video-hanna.mp4" type="video/mp4">
                     Tu navegador no soporta la etiqueta de video.
                 </video>
@@ -286,7 +262,7 @@
     <script>
         // --- CONFIGURACIÓN ---
         const hannaBirthday = new Date("2003-11-26T00:00:00"); 
-        const unlockDate = new Date(2025, 10, 25, 0, 0, 0); 
+        const unlockDate = new Date(2025, 10, 26, 0, 0, 0); 
         const flightDate = new Date("2025-12-25T03:00:00"); 
         const SECRET_PASSWORD = "HANNA"; 
         
@@ -299,6 +275,7 @@
             "Incluyes a todos los que puedes y te esfuerzas para que todos tengan una bonita experiencia", "Transmites alegría, eres muy divertida, espontánea y estás locamente llena de vida"
         ];
 
+        // Usa tus archivos .webp optimizados
         const photoFilenames = [
             "foto1.webp", "foto2.webp", "foto3.webp", "foto4.webp", 
             "foto5.webp", "foto6.webp", "foto7.webp", "foto8.webp",
@@ -308,7 +285,9 @@
             "foto21.webp", "foto22.webp", "foto23.webp", "foto24.webp"
         ];
 
-        // --- LÓGICA BLOQUEO GLOBAL ---
+        let galleryLoaded = false;
+
+        // --- LÓGICA BLOQUEO GLOBAL Y TRANSICIÓN ---
         function checkGlobalLock() {
             const now = new Date();
             const diff = unlockDate - now;
@@ -317,12 +296,29 @@
             const timerDisplay = document.getElementById("global-timer");
 
             if (diff <= 0) {
-                lockScreen.style.display = "none";
-                mainContent.style.display = "block";
-                setTimeout(() => { mainContent.style.opacity = 1; }, 50);
                 if (window.globalTimerInterval) clearInterval(window.globalTimerInterval);
+
+                // OPTIMIZACIÓN: Cargar galería solo ahora que se va a mostrar
+                if (!galleryLoaded) {
+                    generateGallery();
+                    galleryLoaded = true;
+                }
+
+                // Transición suave (Smooth)
+                mainContent.style.display = "block";
+                
+                setTimeout(() => {
+                    lockScreen.classList.add('fade-out');
+                    mainContent.classList.add('fade-in');
+                    
+                    setTimeout(() => {
+                        lockScreen.style.display = 'none';
+                    }, 1000);
+                }, 100);
+
                 return; 
             }
+            
             const d = Math.floor(diff / (1000 * 60 * 60 * 24));
             const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const m = Math.floor((diff / 1000 / 60) % 60);
@@ -332,35 +328,49 @@
         window.globalTimerInterval = setInterval(checkGlobalLock, 1000);
         checkGlobalLock();
 
-        // --- CONTADOR VIDA (MODIFICADO: DISEÑO DE CAJAS) ---
+        // --- GENERAR GALERÍA ---
+        function generateGallery() {
+            const galleryContainer = document.getElementById("gallery-container");
+            const lightbox = document.getElementById("lightbox");
+            const lightboxImg = document.getElementById("lightbox-img");
+
+            photoFilenames.forEach(filename => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                const img = document.createElement('img');
+                img.src = `fotos/${filename}`;
+                img.alt = "Foto de Hanna";
+                img.loading = "lazy"; 
+                img.decoding = "async"; // OPTIMIZACIÓN: No bloquea el hilo principal
+                
+                item.addEventListener('click', function() {
+                    lightboxImg.src = this.querySelector('img').src;
+                    lightbox.classList.add('active');
+                });
+                item.appendChild(img);
+                galleryContainer.appendChild(item);
+            });
+
+            lightbox.addEventListener('click', function(e) {
+                if (e.target !== lightboxImg) { lightbox.classList.remove('active'); }
+            });
+        }
+
+        // --- CONTADOR VIDA (DASHBOARD) ---
         function updateLifeCounter() {
             const now = new Date();
             const diff = now - hannaBirthday;
-
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const minutes = Math.floor((diff / 1000 / 60) % 60);
             const seconds = Math.floor((diff / 1000) % 60);
 
-            // Aquí inyectamos el HTML de las cajitas en lugar de texto plano
             document.getElementById("life-counter").innerHTML = `
                 <div class="counter-wrapper">
-                    <div class="time-box">
-                        <span class="time-val">${days}</span>
-                        <span class="time-label">Días</span>
-                    </div>
-                    <div class="time-box">
-                        <span class="time-val">${hours}</span>
-                        <span class="time-label">Hrs</span>
-                    </div>
-                    <div class="time-box">
-                        <span class="time-val">${minutes}</span>
-                        <span class="time-label">Min</span>
-                    </div>
-                    <div class="time-box">
-                        <span class="time-val">${seconds}</span>
-                        <span class="time-label">Seg</span>
-                    </div>
+                    <div class="time-box"><span class="time-val">${days}</span><span class="time-label">Días</span></div>
+                    <div class="time-box"><span class="time-val">${hours}</span><span class="time-label">Hrs</span></div>
+                    <div class="time-box"><span class="time-val">${minutes}</span><span class="time-label">Min</span></div>
+                    <div class="time-box"><span class="time-val">${seconds}</span><span class="time-label">Seg</span></div>
                 </div>
             `;
         }
@@ -374,31 +384,6 @@
             card.innerHTML = `<div class="card-inner"><div class="card-front">${index + 1}</div><div class="card-back">${reason}</div></div>`;
             card.addEventListener('click', function() { this.classList.toggle('flipped'); });
             container.appendChild(card);
-        });
-
-        // --- GALERÍA FOTOS ---
-        const galleryContainer = document.getElementById("gallery-container");
-        const lightbox = document.getElementById("lightbox");
-        const lightboxImg = document.getElementById("lightbox-img");
-        const lightboxClose = document.getElementById("lightbox-close");
-
-        photoFilenames.forEach(filename => {
-            const item = document.createElement('div');
-            item.className = 'gallery-item';
-            const img = document.createElement('img');
-            img.src = `fotos/${filename}`;
-            img.alt = "Foto de Hanna";
-            img.loading = "lazy";
-            item.addEventListener('click', function() {
-                lightboxImg.src = this.querySelector('img').src;
-                lightbox.classList.add('active');
-            });
-            item.appendChild(img);
-            galleryContainer.appendChild(item);
-        });
-
-        lightbox.addEventListener('click', function(e) {
-            if (e.target !== lightboxImg) { lightbox.classList.remove('active'); }
         });
 
         // --- CUENTA REGRESIVA VUELO ---
