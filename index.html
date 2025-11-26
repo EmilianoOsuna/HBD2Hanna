@@ -56,6 +56,52 @@
         .hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
         .hero h1 { font-size: 3rem; }
         .life-counter { font-size: 1.5rem; font-weight: bold; word-wrap: break-word; }
+
+        /* --- NUEVO ESTILO DEL CONTADOR (Dashboard) --- */
+        .counter-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap; /* Para que se adapte a móviles */
+            margin-top: 20px;
+        }
+
+        .time-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(255, 143, 163, 0.3); /* Sombra suave rosa */
+            min-width: 80px; /* Tamaño mínimo para que se vean uniformes */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .time-box:hover {
+            transform: translateY(-5px); /* Efecto flotante al pasar el mouse */
+        }
+
+        .time-val {
+            font-size: 2.5rem; /* ¡Números grandes! */
+            font-weight: bold;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            color: #888;
+        }
+
+        /* Ajuste para móviles: que se vean un poco más pequeños si es necesario */
+        @media (max-width: 768px) {
+            .time-val { font-size: 2rem; }
+            .time-box { min-width: 70px; padding: 10px; }
+        }
         
         /* --- TARJETAS --- */
         .cards-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; max-width: 1200px; margin: 0 auto; }
@@ -240,7 +286,7 @@
     <script>
         // --- CONFIGURACIÓN ---
         const hannaBirthday = new Date("2003-11-26T00:00:00"); 
-        const unlockDate = new Date(2025, 10, 26, 0, 0, 0); 
+        const unlockDate = new Date(2025, 10, 25, 0, 0, 0); 
         const flightDate = new Date("2025-12-25T03:00:00"); 
         const SECRET_PASSWORD = "HANNA"; 
         
@@ -286,15 +332,37 @@
         window.globalTimerInterval = setInterval(checkGlobalLock, 1000);
         checkGlobalLock();
 
-        // --- CONTADOR VIDA ---
+        // --- CONTADOR VIDA (MODIFICADO: DISEÑO DE CAJAS) ---
         function updateLifeCounter() {
             const now = new Date();
             const diff = now - hannaBirthday;
+
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const minutes = Math.floor((diff / 1000 / 60) % 60);
             const seconds = Math.floor((diff / 1000) % 60);
-            document.getElementById("life-counter").innerText = `${days}d, ${hours}h, ${minutes}m y ${seconds}s`;
+
+            // Aquí inyectamos el HTML de las cajitas en lugar de texto plano
+            document.getElementById("life-counter").innerHTML = `
+                <div class="counter-wrapper">
+                    <div class="time-box">
+                        <span class="time-val">${days}</span>
+                        <span class="time-label">Días</span>
+                    </div>
+                    <div class="time-box">
+                        <span class="time-val">${hours}</span>
+                        <span class="time-label">Hrs</span>
+                    </div>
+                    <div class="time-box">
+                        <span class="time-val">${minutes}</span>
+                        <span class="time-label">Min</span>
+                    </div>
+                    <div class="time-box">
+                        <span class="time-val">${seconds}</span>
+                        <span class="time-label">Seg</span>
+                    </div>
+                </div>
+            `;
         }
         setInterval(updateLifeCounter, 1000);
 
