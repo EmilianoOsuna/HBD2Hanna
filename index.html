@@ -12,7 +12,6 @@
             --primary: #ff8fa3; 
             --bg: #fff0f3;
             --text: #590d22;
-            --lock-bg: #2b0510;
         }
         body {
             font-family: 'Courier New', monospace;
@@ -28,51 +27,11 @@
         p { line-height: 1.5; }
         img { max-width: 100%; height: auto; display: block; }
 
-        /* --- PANTALLA DE BLOQUEO GLOBAL --- */
-        #global-lock-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--lock-bg);
-            color: var(--primary);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 20px;
-            
-            /* OPTIMIZACIÓN: Transición suave */
-            transition: opacity 1s ease-in-out, visibility 1s;
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        /* Clase para desvanecer el bloqueo */
-        .fade-out {
-            opacity: 0 !important;
-            visibility: hidden;
-        }
-
-        .lock-icon { font-size: 4rem; margin-bottom: 20px; }
-        .lock-title { color: white; font-size: 1.5rem; margin-bottom: 10px; }
-        .lock-timer { font-size: 3rem; font-weight: bold; color: white; margin: 20px 0; font-family: monospace; }
-        .lock-note { color: #ffc2d1; font-size: 0.9rem; max-width: 600px; }
-
         /* --- CONTENIDO PRINCIPAL --- */
+        /* Ya no está oculto, se muestra por defecto */
         #main-content { 
-            display: none; 
-            opacity: 0; 
-            /* OPTIMIZACIÓN: Entrada suave */
-            transition: opacity 2s ease-out;
-            will-change: opacity;
-        }
-
-        /* Clase para mostrar el contenido */
-        .fade-in {
-            opacity: 1 !important;
+            display: block;
+            opacity: 1;
         }
 
         /* --- ESTILOS GENERALES --- */
@@ -119,10 +78,10 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
             transition: transform 0.3s ease; 
             cursor: zoom-in;
-            height: 420px; /* Altura fija para uniformidad */
+            height: 420px;
             width: 100%;
             position: relative;
-            background-color: #eee; /* Color de fondo mientras carga */
+            background-color: #eee;
         }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .gallery-item:hover { transform: translateY(-5px); }
@@ -153,18 +112,18 @@
         .video-container { max-width: 800px; margin: 0 auto; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); background-color: black; }
         video { width: 100%; height: auto; display: block; }
 
-        /* --- SECCIONES DE CIERRE --- */
-        .locked-wrapper, .surprise-section { border-radius: 20px; margin: 20px auto; max-width: 800px; padding: 60px 20px; }
-        .locked-wrapper { background-color: var(--text); color: white; }
-        .surprise-section { background-color: var(--text); color: white; display: none; }
-        #trip-countdown { font-size: 2.5rem; margin: 30px 0; font-weight: bold; word-break: break-word; }
-        .input-group { margin-top: 30px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .password-input { padding: 15px; font-size: 1.2rem; border-radius: 10px; border: 2px solid var(--primary); outline: none; text-align: center; font-family: 'Courier New', monospace; min-width: 200px; }
-        .unlock-btn { padding: 15px 30px; font-size: 1.2rem; background-color: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-family: 'Courier New', monospace; transition: background 0.3s; }
-        .unlock-btn:hover { background-color: #ff5c77; }
-        .error-msg { color: #ff8fa3; margin-top: 15px; font-weight: bold; display: none; }
-        .hidden-message { font-size: 1.2rem; opacity: 0; animation: fadeIn 3s forwards; animation-delay: 1s; }
-        @keyframes fadeIn { to { opacity: 1; } }
+        /* --- SECCIÓN SORPRESA (Siempre visible ahora) --- */
+        .surprise-section { 
+            background-color: var(--text); 
+            color: white; 
+            border-radius: 20px; 
+            margin: 20px auto; 
+            max-width: 800px; 
+            padding: 60px 20px;
+        }
+        
+        #trip-countdown { margin: 30px 0; }
+        .hidden-message { font-size: 1.2rem; margin-top: 30px; }
 
         /* --- RESPONSIVE (MÓVIL) --- */
         @media (max-width: 768px) {
@@ -172,25 +131,14 @@
             .time-val { font-size: 2rem; }
             .time-box { min-width: 70px; padding: 10px; }
             .card { width: 160px; height: 160px; }
-            #trip-countdown, .lock-timer { font-size: 1.8rem; }
-            .input-group { flex-direction: column; align-items: center; }
-            .password-input, .unlock-btn { width: 100%; margin: 5px 0; }
-            .locked-wrapper, .surprise-section { padding: 40px 15px; margin: 10px; }
+            .surprise-section { padding: 40px 15px; margin: 10px; }
             .gallery-container { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-            .gallery-item { height: 300px; } /* Altura fija menor en móvil */
+            .gallery-item { height: 300px; }
             #lightbox-close { top: 10px; right: 20px; font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
-
-    <div id="global-lock-screen">
-        <div class="lock-icon">🎂🚫</div>
-        <h2 class="lock-title">¡No comas ansias, mi amorcito!</h2>
-        <p>Este regalo se desbloquea automáticamente en:</p>
-        <div id="global-timer" class="lock-timer">Cargando...</div>
-        <p class="lock-note">Vuelve cuando el reloj marque cero. Te amo.</p>
-    </div>
 
     <div id="lightbox">
         <span id="lightbox-close">&times;</span>
@@ -235,25 +183,12 @@
         </section>
 
         <section>
-            <div id="locked-section" class="locked-wrapper">
-                <h2>🔒 Archivo Confidencial</h2>
-                <p>Responde este acertijo: <br> "Es mío, lo llevo en el pecho, pero solo tú lo puedes tener, ¿Qué es?". </p>
-                
-                <div class="input-group">
-                    <input type="text" id="pass-input" class="password-input" placeholder="CONTRASEÑA" autocomplete="off">
-                    <button onclick="checkPassword()" class="unlock-btn">Desbloquear</button>
-                </div>
-                <p id="error-message" class="error-msg">⚠️ Acceso denegado. Intenta de nuevo.</p>
-            </div>
-
             <div id="surprise-section" class="surprise-section">
-                <h2>✨ ¡ACCESO CONCEDIDO! ✨</h2>
-                <h3>Tiempo restante para nuestro próximo abrazo:</h3>
+                <h3>✨ Tiempo restante para nuestro próximo abrazo ✨</h3>
                 <div id="trip-countdown">Calculando...</div>
+                
                 <div class="hidden-message">
-                    <p style="font-size: 1.5rem;">Sorpresa, mi amor... ❤️</p>
-                    <p style="font-size: 2rem; margin: 20px 0;"><strong>¡YA TENGO EL BOLETO! ✈️🇧🇴</strong></p>
-                    <p>Prepárate. Nos vemos en diciembre.</p>
+                    <p>Prepárate. Nos vemos en diciembre. <br><br>TE AMO INEFABLEMENTE ❤️</p>
                 </div>
             </div>
         </section>
@@ -262,10 +197,8 @@
     <script>
         // --- CONFIGURACIÓN ---
         const hannaBirthday = new Date("2003-11-26T00:00:00"); 
-        const unlockDate = new Date(2025, 10, 26, 0, 0, 0); 
         const flightDate = new Date("2025-12-25T03:00:00"); 
-        const SECRET_PASSWORD = "MI CORAZÓN"; 
-        
+
         const reasons = [
             "AMAS. Amas a todos como Dios nos ama", "Eres amable, paciente y empática", "Eres optimista, siempre te esfuerzas por ver el vaso medio lleno", "A pesar de que la vida no siempre es fácil, tú nunca te desquitas con los demás",
             "Siempre quieres dar más de ti y siempre quieres mejorar", "Te conoces mucho y eres fiel a ti", "Tienes maravillosos valores y principios, pero no solo eso, vives conforme a ellos", "Eres super inteligente, curiosa e interesante. Sabes muchas cosas y siempre quieres aprender más",
@@ -275,7 +208,6 @@
             "Incluyes a todos los que puedes y te esfuerzas para que todos tengan una bonita experiencia", "Transmites alegría, eres muy divertida, espontánea y estás locamente llena de vida"
         ];
 
-        // Usa tus archivos .webp optimizados
         const photoFilenames = [
             "foto1.webp", "foto2.webp", "foto3.webp", "foto4.webp", 
             "foto5.webp", "foto6.webp", "foto7.webp", "foto8.webp",
@@ -285,48 +217,13 @@
             "foto21.webp", "foto22.webp", "foto23.webp", "foto24.webp"
         ];
 
-        let galleryLoaded = false;
-
-        // --- LÓGICA BLOQUEO GLOBAL Y TRANSICIÓN ---
-        function checkGlobalLock() {
-            const now = new Date();
-            const diff = unlockDate - now;
-            const lockScreen = document.getElementById("global-lock-screen");
-            const mainContent = document.getElementById("main-content");
-            const timerDisplay = document.getElementById("global-timer");
-
-            if (diff <= 0) {
-                if (window.globalTimerInterval) clearInterval(window.globalTimerInterval);
-
-                // OPTIMIZACIÓN: Cargar galería solo ahora que se va a mostrar
-                if (!galleryLoaded) {
-                    generateGallery();
-                    galleryLoaded = true;
-                }
-
-                // Transición suave (Smooth)
-                mainContent.style.display = "block";
-                
-                setTimeout(() => {
-                    lockScreen.classList.add('fade-out');
-                    mainContent.classList.add('fade-in');
-                    
-                    setTimeout(() => {
-                        lockScreen.style.display = 'none';
-                    }, 1000);
-                }, 100);
-
-                return; 
-            }
-            
-            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-            const m = Math.floor((diff / 1000 / 60) % 60);
-            const s = Math.floor((diff / 1000) % 60);
-            if (d > 0) { timerDisplay.innerText = `${d}d ${h}h ${m}m ${s}s`; } else { timerDisplay.innerText = `${h}h ${m}m ${s}s`; }
-        }
-        window.globalTimerInterval = setInterval(checkGlobalLock, 1000);
-        checkGlobalLock();
+        // --- INICIALIZACIÓN INMEDIATA ---
+        // Ya no hay bloqueo, ejecutamos todo al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            generateGallery();
+            updateLifeCounter();
+            updateTripCountdown();
+        });
 
         // --- GENERAR GALERÍA ---
         function generateGallery() {
@@ -341,7 +238,7 @@
                 img.src = `fotos/${filename}`;
                 img.alt = "Foto de Hanna";
                 img.loading = "lazy"; 
-                img.decoding = "async"; // OPTIMIZACIÓN: No bloquea el hilo principal
+                img.decoding = "async";
                 
                 item.addEventListener('click', function() {
                     lightboxImg.src = this.querySelector('img').src;
@@ -386,38 +283,32 @@
             container.appendChild(card);
         });
 
-        // --- CUENTA REGRESIVA VUELO ---
+        // --- CUENTA REGRESIVA VUELO (ESTILO CAJAS) ---
         function updateTripCountdown() {
             const now = new Date();
             const diff = flightDate - now;
-            if (diff < 0) { document.getElementById("trip-countdown").innerText = "¡Llegó el momento!"; return; }
+            
+            if (diff < 0) { 
+                document.getElementById("trip-countdown").innerHTML = "<div style='font-size: 2rem; font-weight: bold;'>¡Llegó el momento! ✈️❤️</div>"; 
+                return; 
+            }
+
             const d = Math.floor(diff / (1000 * 60 * 60 * 24));
             const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
             const m = Math.floor((diff / 1000 / 60) % 60);
             const s = Math.floor((diff / 1000) % 60);
-            document.getElementById("trip-countdown").innerText = `${d}d ${h}h ${m}m ${s}s`;
+
+            document.getElementById("trip-countdown").innerHTML = `
+                <div class="counter-wrapper">
+                    <div class="time-box"><span class="time-val">${d}</span><span class="time-label">Días</span></div>
+                    <div class="time-box"><span class="time-val">${h}</span><span class="time-label">Hrs</span></div>
+                    <div class="time-box"><span class="time-val">${m}</span><span class="time-label">Min</span></div>
+                    <div class="time-box"><span class="time-val">${s}</span><span class="time-label">Seg</span></div>
+                </div>
+            `;
         }
         setInterval(updateTripCountdown, 1000);
 
-        // --- PASSWORD ---
-        function checkPassword() {
-            const input = document.getElementById("pass-input");
-            const val = input.value.toUpperCase().trim();
-            const errorMsg = document.getElementById("error-message");
-            const lockedSection = document.getElementById("locked-section");
-            const surpriseSection = document.getElementById("surprise-section");
-            if (val === SECRET_PASSWORD) {
-                errorMsg.style.display = "none";
-                lockedSection.style.display = "none";
-                surpriseSection.style.display = "block";
-                surpriseSection.scrollIntoView({ behavior: 'smooth' });
-            } else {
-                errorMsg.style.display = "block";
-                input.style.border = "2px solid red";
-                setTimeout(() => { input.style.border = "2px solid var(--primary)"; }, 500);
-            }
-        }
-        document.getElementById("pass-input").addEventListener("keypress", function(e) { if (e.key === "Enter") checkPassword(); });
     </script>
 </body>
 </html>
